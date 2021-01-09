@@ -25,11 +25,11 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-T
 
 
 #Disable Admin Shares (psexec)
-reg add HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters\ /v AutoShareWks /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters\" /v AutoShareWks /t REG_DWORD /d 0 /f
 
 
 #SMBv1 Disable 
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters /v SMB1 /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters" /v SMB1 /t REG_DWORD /d 1 /f
 
 
 #stop winrm service
@@ -46,19 +46,19 @@ icacls C:\Windows\Temp /inheritance:r /deny "Everyone:(OI)(CI)(F)"
 
 
 #Hashing
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v NoLMHash /t REG_DWORD /d 1 /f
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel /t REG_DWORD /d 5 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v NoLMHash /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LMCompatibilityLevel /t REG_DWORD /d 5 /f
 
 
 #Anon Login
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymous /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v restrictanonymous /t REG_DWORD /d 1 /f
 
 
 #Disable Keys
-reg add HKCU\Control Panel\Accessibility\StickyKeys /v Flags /t REG_SZ /d 506 /f
-reg add HKCU\Control Panel\Accessibility\ToggleKeys /v Flags /t REG_SZ /d 58 /f
+reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d 506 /f
+reg add "HKCU\Control Panel\Accessibility\ToggleKeys" /v Flags /t REG_SZ /d 58 /f
 reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v Flags /t REG_SZ /d 122 /f
-reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI /v ShowTabletKeyboard /v REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI" /v ShowTabletKeyboard /v REG_DWORD /d 0 /f
 
 
 # Enable LSASS Memory Protection
