@@ -32,15 +32,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters\" /v Aut
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters" /v SMB1 /t REG_DWORD /d 1 /f
 
 
-#stop winrm service
-net stop winrm
-
-
-#restart SMB server for changes
-net stop server
-net start server
-
-
 #Temp Folder Permissioning (might break installers)
 icacls C:\Windows\Temp /inheritance:r /deny "Everyone:(OI)(CI)(F)"
 
@@ -61,6 +52,61 @@ reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v Flags /t REG_SZ 
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI" /v ShowTabletKeyboard /v REG_DWORD /d 0 /f
 
 
+#pagefile wipe on shutdown
+reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v ClearPageFileAtShutdown /t REG_DWORD /d 1 /f
+
+
+#disable floppy disk remoting
+reg ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AllocateFloppies /t REG_DWORD /d 1 /f
+
+
+#Prevent print driver installs 
+reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers" /v AddPrinterDrivers /t REG_DWORD /d 1 /f
+
+
+#local account blank passwords
+reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LimitBlankPasswordUse /t REG_DWORD /d 1 /f
+
+
+# enable full uac
+reg ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v PromptOnSecureDesktop /t REG_DWORD /d 1 /f
+
+
+# Enable installer detections
+reg ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableInstallerDetection /t REG_DWORD /d 1 /f
+
+
+# anon enumeration prevention
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymous /t REG_DWORD /d 1 /f 
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymoussam /t REG_DWORD /d 1 /f 
+
+
+#domain cred storing 
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v disabledomaincreds /t REG_DWORD /d 1 /f 
+#no perms to anons
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v everyoneincludesanonymous /t REG_DWORD /d 0 /f 
+
+
+#smb strengtheners
+reg ADD HKLM\SYSTEM\CurrentControlSet\services\LanmanWorkstation\Parameters /v EnablePlainTextPassword /t REG_DWORD /d 0 /f
+reg ADD HKLM\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters /v NullSessionPipes /t REG_MULTI_SZ /d "" /f
+reg ADD HKLM\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters /v NullSessionShares /t REG_MULTI_SZ /d "" /f
+
+
+#remote registry path denial
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedExactPaths /v Machine /t REG_MULTI_SZ /d "" /f
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedPaths /v Machine /t REG_MULTI_SZ /d "" /f
+
+
+#stop winrm service
+net stop winrm
+
+
+#restart SMB server for changes
+net stop server
+net start server
+
+
 # Enable LSASS Memory Protection
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL /t REG_DWORD /d 1 /f
 
@@ -70,4 +116,4 @@ bcdedit /set testsigning off
 
 
 #full restart
-restart /r /t 0
+#restart /r /t 0
