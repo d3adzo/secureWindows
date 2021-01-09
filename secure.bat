@@ -32,6 +32,10 @@ reg add HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters\ /v AutoS
 reg add HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters /v SMB1 /t REG_DWORD /d 1 /f
 
 
+#stop winrm service
+net stop winrm
+
+
 #restart SMB server for changes
 net stop server
 net start server
