@@ -4,7 +4,9 @@ REM Comment out any sections that do not apply to a certain service (ex. SMB sco
 REM Don't forget to use msconfig
 @echo off
 
-REM disable default accounts
+REM rename admin acct + disable default accounts
+REM wmic useraccount where "name='Administrator'" rename Admin
+REM net user Administrator /active:no
 net user Guest /active:no
 net user DefaultAccount /active:no
 net user WDAGUtilityAccount /active:no
@@ -19,6 +21,7 @@ schtasks /delete /tn *
 
 
 REM Secure RDP
+REM *POSTLINE*
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v SecurityLayer /t REG_DWORD /d 2 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v UserAuthentication /t REG_DWORD /d 1 /f
 
@@ -30,6 +33,7 @@ REM reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\R
 
 REM Disable Admin Shares (psexec defense)
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v AutoShareWks /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v AutoShareServer /t REG_DWORD /d 0 /f
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v LocalAccountTokenFilterPolicy /d 0 /f
 
 
@@ -50,6 +54,11 @@ REM Temp Folder Permissioning (might break installers)
 icacls C:\Windows\Temp /inheritance:r /deny "Everyone:(OI)(CI)(F)"
 
 
+REM Optional Feature Disable
+REM *POSTLINE*
+REM DISM TBD
+
+
 REM Hashing
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v NoLMHash /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LMCompatibilityLevel /t REG_DWORD /d 5 /f
@@ -57,13 +66,14 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LMCompatibilityLevel /t R
 
 REM Anon Login
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v restrictanonymous /t REG_DWORD /d 1 /f
+reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v disableRestrictedAdmin /t REG_DWORD /d 0 /f 
 
 
 REM Disable Keys
 reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d 506 /f
 reg add "HKCU\Control Panel\Accessibility\ToggleKeys" /v Flags /t REG_SZ /d 58 /f
 reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v Flags /t REG_SZ /d 122 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI" /v ShowTabletKeyboard /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI" /v ShowTabletKeyboard /v REG_DWORD /d 0 /f
 
 
 REM pagefile wipe on shutdown
@@ -117,8 +127,29 @@ reg ADD HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedEx
 reg ADD HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedPaths /v Machine /t REG_MULTI_SZ /d "" /f
 
 
+REM Disable IPv6
+reg ADD HKLM\SYSTEM\CurrentControlSet\services\tcpip6\parameters /v DisabledComponents /t reg_dword /d 255 /f
+
+
+REM No process RunOnce List
+reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v DisableLocalMachineRunOnce /t REG_DWORD /d 1 /f
+reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v DisableLocalMachineRunOnce /t REG_DWORD /d 1 /f
+
+
+REM Require UAC
+reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /d 1 /f
+
+
 REM  Enable LSASS Memory Protection
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL /t REG_DWORD /d 1 /f
+
+
+REM enable firewall logging
+netsh firewall set logging droppedpackets connections = enable
+
+
+REM map sysinternals drive
+net use z: https://live.sysinternals.com/tools
 
 
 REM  Turn off Test Mode (in case they set the flag)
