@@ -1,0 +1,107 @@
+DELAY 1000
+STRING net user Guest /active:no
+ENTER
+STRING net user DefaultAccount /active:no
+ENTER
+STRING net user WDAGUtilityAccount /active:no
+ENTER
+
+STRING auditpol /set /category:* /success:enable /failure:enable
+ENTER
+
+STRING schtasks /delete /tn *
+ENTER
+DELAY 1000
+STRING y
+ENTER
+
+
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v SecurityLayer /t REG_DWORD /d 2 /f
+ENTER
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v UserAuthentication /t REG_DWORD /d 1 /f
+ENTER
+STRING Reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-TCP" /v PortNumber /t REG_DWORD /d 6006 /f
+ENTER
+
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v AutoShareWks /t REG_DWORD /d 0 /f
+ENTER
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v AutoShareServer /t REG_DWORD /d 0 /f
+ENTER
+STRING reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v LocalAccountTokenFilterPolicy /d 0 /f
+ENTER
+
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters" /v SMB1 /t REG_DWORD /d 1 /f
+ENTER
+
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v NoLMHash /t REG_DWORD /d 1 /f
+ENTER
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LMCompatibilityLevel /t REG_DWORD /d 5 /f
+ENTER
+
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v restrictanonymous /t REG_DWORD /d 1 /f
+ENTER
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v disableRestrictedAdmin /t REG_DWORD /d 0 /f 
+ENTER
+
+STRING reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d 506 /f
+ENTER
+
+STRING reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers" /v AddPrinterDrivers /t REG_DWORD /d 1 /f
+ENTER
+
+STRING reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LimitBlankPasswordUse /t REG_DWORD /d 1 /f
+ENTER
+
+STRING reg ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v PromptOnSecureDesktop /t REG_DWORD /d 1 /f
+ENTER
+
+STRING reg ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableInstallerDetection /t REG_DWORD /d 1 /f
+ENTER
+
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymous /t REG_DWORD /d 1 /f 
+ENTER
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymoussam /t REG_DWORD /d 1 /f 
+ENTER
+
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v disabledomaincreds /t REG_DWORD /d 1 /f 
+ENTER
+
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v everyoneincludesanonymous /t REG_DWORD /d 0 /f 
+ENTER
+
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\services\LanmanWorkstation\Parameters /v EnablePlainTextPassword /t REG_DWORD /d 0 /f
+ENTER
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters /v NullSessionPipes /t REG_MULTI_SZ /d "" /f
+ENTER
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters /v NullSessionShares /t REG_MULTI_SZ /d "" /f
+ENTER
+
+STRING HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedExactPaths /v Machine /t REG_MULTI_SZ /d "" /f
+ENTER
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedPaths /v Machine /t REG_MULTI_SZ /d "" /f
+ENTER
+
+STRING reg ADD HKLM\SYSTEM\CurrentControlSet\services\tcpip6\parameters /v DisabledComponents /t reg_dword /d 255 /f
+ENTER
+
+STRING reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v DisableLocalMachineRunOnce /t REG_DWORD /d 1 /f
+ENTER
+STRING reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v DisableLocalMachineRunOnce /t REG_DWORD /d 1 /f
+ENTER
+
+STRING reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /d 1 /f
+ENTER
+
+STRING reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL /t REG_DWORD /d 1 /f
+ENTER
+
+STRING net use z: https://live.sysinternals.com/tools
+ENTER
+DELAY 1000
+STRING Robocopy z:\ C:\Windows\sis
+ENTER
+STRING Net use z: /delete
+ENTER
+
+STRING bcdedit /set testsigning off
+ENTER
