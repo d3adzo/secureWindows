@@ -38,11 +38,11 @@ reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v Loca
 
 REM WinRM Killer (only uncomment if winrm is not needed)
 REM cd C:\Windows\System32
+REM net stop winrm
+REM sc config winrm start=disabled
 REM takeown.exe /f .\WsmSvc.dll
 REM icacls .\WsmSvc.dll /grant "<username>:(F)"
 REM del .\WsmSvc.dll /f
-REM net stop winrm
-REM sc config winrm start=disabled
 
 
 REM SMBv1 Disable 
