@@ -151,6 +151,11 @@ REM enable firewall logging
 netsh firewall set logging droppedpackets connections = enable
 
 
+REM Enable PowerShell Logging
+reg add "HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\PowerShell\ModuleLogging" /v EnableModuleLogging /d REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" /v EnableScriptBlockLogging /d REG_DWORD /d 1 /f
+
+
 REM map sysinternals drive
 net use z: https://live.sysinternals.com/tools
 
