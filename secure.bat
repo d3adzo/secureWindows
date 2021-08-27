@@ -16,12 +16,11 @@ REM Enable full auditing
 auditpol /set /category:* /success:enable /failure:enable
 
 
-REM  delete scheduled tasks
-schtasks /delete /tn *
+REM  delete scheduled tasks (might break AD box)
+REM schtasks /delete /tn *
 
 
 REM Secure RDP
-REM *POSTLINE*
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v SecurityLayer /t REG_DWORD /d 2 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v UserAuthentication /t REG_DWORD /d 1 /f
 
@@ -54,11 +53,6 @@ REM Temp Folder Permissioning (might break installers)
 icacls C:\Windows\Temp /inheritance:r /deny "Everyone:(OI)(CI)(F)"
 
 
-REM Optional Feature Disable
-REM *POSTLINE*
-REM DISM TBD
-
-
 REM Hashing
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v NoLMHash /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LMCompatibilityLevel /t REG_DWORD /d 5 /f
@@ -76,12 +70,20 @@ reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v Flags /t REG_SZ 
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI" /v ShowTabletKeyboard /t REG_DWORD /d 0 /f
 
 
-REM pagefile wipe on shutdown
-reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v ClearPageFileAtShutdown /t REG_DWORD /d 1 /f
+REM pagefile wipe on shutdown (causing issues)
+REM reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v ClearPageFileAtShutdown /t REG_DWORD /d 1 /f
 
 
 REM disable floppy disk remoting
 reg ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AllocateFloppies /t REG_DWORD /d 1 /f
+
+
+REM Enable SMB Signing (prevent smb ntlm relaying attacks)
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters" /v EnableSecuritySignature /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Services\LanmanServer\Parameters" /v RequireSecuritySignature  /t REG_DWORD /d 1 /f
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Rdr\Parameters" /v EnableSecuritySignature /t REG_DWORD /d 1 /f
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Rdr\Parameters" /v RequireSecuritySignature /t REG_DWORD /d 1 /f
+
 
 
 REM Prevent print driver installs 
@@ -101,17 +103,18 @@ reg add HKLM\Software\Policies\Microsoft\Windows\BITS /v EnableBITSMaxBandwidth 
 reg add HKLM\Software\Policies\Microsoft\Windows\BITS /v MaxDownloadTime /t REG_DWORD /d 1 /f
 
 
-REM  Enable installer detections
+REM Enable installer detections
 reg ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableInstallerDetection /t REG_DWORD /d 1 /f
 
 
-REM  anon enumeration prevention
+REM anon enumeration prevention
 reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymous /t REG_DWORD /d 1 /f 
 reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v restrictanonymoussam /t REG_DWORD /d 1 /f 
 
 
 REM domain cred storing 
 reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v disabledomaincreds /t REG_DWORD /d 1 /f 
+
 REM no perms to anons
 reg ADD HKLM\SYSTEM\CurrentControlSet\Control\Lsa /v everyoneincludesanonymous /t REG_DWORD /d 0 /f 
 
