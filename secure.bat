@@ -140,11 +140,20 @@ reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v Disa
 
 
 REM Require UAC
-reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /d 1 /f
+reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
+reg add HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated /t REG_DWORD /d 0 /f
 
 
 REM  Enable LSASS Memory Protection
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL /t REG_DWORD /d 1 /f
+
+
+REM Enable Credential Guard
+reg add "HKLM\SYSTEM\CurrentControl\Control\Lsa" /v LsaCfgFlags /t REG_DWORD /d 1 /f
+
+
+REM Disable plain text passwords stored in LSASS
+reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 0 /f 
 
 
 REM enable firewall logging
